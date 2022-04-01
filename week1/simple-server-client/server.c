@@ -10,15 +10,15 @@
 #define PORT 8080
 
 int main(int argc, char const *argv[]) {
-    int server_fd, new_socket, valread;
-    struct sockaddr_in address;
+    int server_fd, new_socket_fd, valread;
+    struct sockaddr_in address, address_client;
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
     char *hello = "Hello from server";
 
     // Creating socket file descriptor
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) <= 0) {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
@@ -43,14 +43,14 @@ int main(int argc, char const *argv[]) {
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    if ((new_socket = accept(server_fd, (struct sockaddr *) &address,
+    if ((new_socket_fd = accept(server_fd, (struct sockaddr *) &address_client,
                              (socklen_t * ) & addrlen)) < 0) {
         perror("accept");
         exit(EXIT_FAILURE);
     }
-    valread = read(new_socket, buffer, 1024);
+    valread = read(new_socket_fd, buffer, 1024);
     printf("%s\n", buffer);
-    send(new_socket, hello, strlen(hello), 0);
+    send(new_socket_fd, hello, strlen(hello), 0);
     printf("Hello message sent\n");
     return 0;
 }
